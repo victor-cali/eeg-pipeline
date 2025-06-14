@@ -1,26 +1,20 @@
 cmake_minimum_required(VERSION 3.15)
-project(EEGPipeline LANGUAGES CXX CUDA)
+project(LSLDemo LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
-find_package(OpenMP REQUIRED)
-enable_language(CUDA)
 
-# liblsl as submodule
+# Add liblsl as submodule (assumed at external/liblsl)
 add_subdirectory(external/liblsl)
+add_library(LSL::lsl ALIAS lsl)
 
-add_executable(eeg_app
-  src/main.cpp
-  src/LSLAdapter.cpp
-  src/RingBuffer.cpp
-  src/FilterProcessor.cpp
-  # ... add other source files here
+# Add your executable
+add_executable(lsl_demo
+    src/main.cpp
+    src/LSLAdapter.cpp
 )
-target_include_directories(eeg_app PRIVATE
-  external/liblsl/include
-  include
-)
-target_link_libraries(eeg_app PRIVATE
-  lsl
-  OpenMP::OpenMP_CXX
-  CUDA::cudart
-)
+
+# Include directory for LSLAdapter.hpp
+target_include_directories(lsl_demo PRIVATE include)
+
+# Link to liblsl target
+target_link_libraries(lsl_demo PRIVATE LSL::lsl)

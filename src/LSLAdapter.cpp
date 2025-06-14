@@ -1,25 +1,36 @@
 #include "LSLAdapter.h"
-#include <lsl_c.h>
 #include <iostream>
 
-LSLAdapter::LSLAdapter(): inlet_(nullptr) {}
+LSLAdapter::LSLAdapter() = default;
 
-LSLAdapter::~LSLAdapter() {
-    if (inlet_) liblsl_destroy_inlet(inlet_);
-}
-
-void LSLAdapter::open_inlet(const std::string& name) {
-    inlet_ = liblsl_create_inlet(liblsl_streaminfo(name.c_str(), "", 8, 0.0, liblsl_channel_format_t::cft_double, "uid"));
-}
-
-bool LSLAdapter::pull_sample(std::vector<std::vector<double>>& buffer) {
-    // simple pull implementation...
-    double temp[8];
-    int got = liblsl_pull_sample_d(static_cast<liblsl_inlet>(inlet_), temp, 0.0);
-    if (got > 0) {
-        buffer.assign(8, std::vector<double>(1));
-        for (int i = 0; i < 8; ++i) buffer[i][0] = temp[i];
-        return true;
+bool LSLAdapter::connect(const std::string& stream_name, double timeout) {
+    std::cout << "Resolving stream with name: " << stream_name << "...\n";
+    auto results = lsl::resolve_stream("name", stream_name, 1, timeout);
+    if (results.empty()) {
+        std::cerr << "No stream found with name: " << stream_name << "\n";
+        return false;
     }
-    return false;
+
+    lsl::stream_info info = results[0];
+    channel_count_ = info.channel_count();
+    sampling_rate_ = static_cast<float>(info.nominal_srate());
+
+    std::cout << "Found stream: " << info.name() 
+              << ", channels: " << channel_count_ 
+              << ", rate: " << sampling_rate_ << "\n";
+
+    inlet_ = new lsl::stream_inlet(info);
+    inlet_->set_postprocessing(lsl::post_ALL);
+    return true;
+}
+
+std::size_t LSLAdapter::pull_chunk(float* dst, std::size_t max_elements, double timeout) {
+    if (!inlet_) {
+        std::cerr << "Inlet not initialized.\n";
+        return 0;
+    }
+
+    std::vector<double> timestamps(max_elements / channel_count_);
+    std::size_t n_read = inlet_->pull_chunk_multiplexed(dst, timestamps.data(), max_elements, timestamps.size(), timeout);
+    return n_read / channel_count_; // return number of samples
 }
