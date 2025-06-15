@@ -2,6 +2,7 @@
 #include "FeatureExtractor.h"
 #include "LSLOutput.h" // For sending processed features
 #include "RingBuffer.h"
+#include "BandPassFilter.h" // Include the header for CudaBandpassFilter
 #include <iostream>
 #include <vector>
 #include <string>
@@ -23,13 +24,17 @@ int main() {
         return 1;
     }
     const int C = adapter.channel_count();
-    const int bufferSamples = 256;
-    RingBuffer ring(bufferSamples, C);
 
     const int num_channels = adapter.channel_count();
-    const double sampling_rate = adapter.sampling_rate();
+    const double sampling_rate =  128.0f;//adapter.sampling_rate();
     const int max_chunk_size = 512;
     std::vector<float> buffer(num_channels * max_chunk_size);
+
+    CudaBandpassFilter filter(
+        128.0f, //adapter.sampling_rate(), // fs
+        4.0f,                    // low cutoff in Hz
+        30.0f                    // high cutoff in Hz
+    );
 
     // --- LSL Output Setup ---
     std::vector<std::string> feature_channel_names;
@@ -45,7 +50,7 @@ int main() {
     std::cout << "\n--- Starting Live Parallel Feature Extraction ---" << std::endl;
 
     // Main loop
-    for (int i = 0; i < 20; ++i) {
+    for (int i = 0; i < 100; ++i) {
         std::size_t samples_read = adapter.pull_chunk(buffer.data(), buffer.size());
 
         if (samples_read > 0) {
@@ -57,7 +62,14 @@ int main() {
             }
 
             std::cout << "--- Received Chunk, processing " << window_size << " samples ---\n";
-            
+
+            // ✅ Apply CUDA filter
+            filter.process(buffer.data(), adapter.channel_count(), window_size);
+
+            // Optionally inspect or pass filtered data downstream
+            std::cout << "[Filter] Applied bandpass filter on " << adapter.channel_count()
+                      << " channels × " << window_size << " samples\n";
+
             std::vector<FeatureExtractor::Features> all_features(num_channels);
 
             #pragma omp parallel for
