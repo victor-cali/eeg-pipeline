@@ -5,7 +5,7 @@
 #include <vector>
 #include <stdexcept>
 
-#define FILTER_LEN 63 
+#define FILTER_LEN 51 
 
 __global__ void fir_filter(const float* signal, const float* kernel, float* output, int N, int M);
 
