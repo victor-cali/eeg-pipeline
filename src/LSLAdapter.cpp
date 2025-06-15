@@ -3,6 +3,16 @@
 
 LSLAdapter::LSLAdapter() = default;
 
+// Destructor definition
+LSLAdapter::~LSLAdapter() {
+    // If inlet_ was successfully created (not nullptr), delete it.
+    // The lsl::stream_inlet destructor will automatically handle disconnection.
+    if (inlet_ != nullptr) {
+        delete inlet_; 
+        inlet_ = nullptr; // Good practice to nullify after deleting
+    }
+}
+
 bool LSLAdapter::connect(const std::string& stream_name, double timeout) {
     std::cout << "Resolving stream with name: " << stream_name << "...\n";
     auto results = lsl::resolve_stream("name", stream_name, 1, timeout);
