@@ -106,6 +106,5 @@ int main() {
     std::cout << "Loop finished. Waiting a moment for final features to be sent...\n";
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
-    producer.join(); // never reached
     return 0;
 }

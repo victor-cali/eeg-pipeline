@@ -80,7 +80,7 @@ In your first terminal, run the LSL sender program. This will start a broadcast 
 From within the eeg-pipeline/external/liblsl/build/ directory:
 
 ```bash
-./examples/SendDataMinimal
+./examples/SendDataSimple
 ```
 
 In the second terminal, you will run the main application that performs the filtering and feature extraction
@@ -88,8 +88,7 @@ In the second terminal, you will run the main application that performs the filt
 From the project's root
 
 ```bash
-cd build
-./lsl_demo
+./build/lsl_demo
 ```
 
 In the third terminal, you will run the receiver, simulating an actual EEG setup.
@@ -97,7 +96,7 @@ In the third terminal, you will run the receiver, simulating an actual EEG setup
 From within the eeg-pipeline/external/liblsl/build/ directory:
 
 ```bash
-./examples/ReceiveDataSimple name ProcessedEEGFeatures
+./examples/ReceiveData name ProcessedEEGFeatures
 ```
 
 You must run the programs in the mentioned order. You can validate that the program is working by looking at the output of each terminal.

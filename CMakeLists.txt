@@ -20,9 +20,17 @@ add_executable(lsl_demo
     src/LSLOutput.cpp 
     src/FeatureExtractor.cpp
     thirdparty/fft/fft.cpp 
+    src/RingBuffer.cpp
+)
+
+
+add_executable(ringbuffer_test
     src/ringbuffer_test.cpp    # <--- new test file
     src/RingBuffer.cpp
 )
+
+target_include_directories(ringbuffer_test PRIVATE include)
+
 
 # Include directory for LSLAdapter.hpp
 target_include_directories(lsl_demo PRIVATE 
