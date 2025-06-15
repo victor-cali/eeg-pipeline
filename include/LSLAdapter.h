@@ -7,6 +7,7 @@
 class LSLAdapter {
 public:
     LSLAdapter();
+    ~LSLAdapter();
 
     // Connects to an LSL stream by name and initializes inlet
     bool connect(const std::string& stream_name, double timeout = 5.0);

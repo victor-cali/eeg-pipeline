@@ -1,11 +1,11 @@
 #include "LSLAdapter.h"
 #include "FeatureExtractor.h"
 #include "LSLOutput.h" // For sending processed features
+#include "RingBuffer.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <cmath>
-#include <thread>
 #include <chrono>
 #include <omp.h> // Required for OpenMP functions
 
@@ -22,6 +22,10 @@ int main() {
     if (!adapter.connect("SimpleStream")) {
         return 1;
     }
+    const int C = adapter.channel_count();
+    const int bufferSamples = 256;
+    RingBuffer ring(bufferSamples, C);
+
     const int num_channels = adapter.channel_count();
     const double sampling_rate = adapter.sampling_rate();
     const int max_chunk_size = 512;
@@ -93,7 +97,7 @@ int main() {
             std::cout << std::endl;
 
         } else {
-            std::cout << "No samples received.\n";
+            std::cout << "[Consumer] Waiting for data...\n";
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -102,5 +106,6 @@ int main() {
     std::cout << "Loop finished. Waiting a moment for final features to be sent...\n";
     std::this_thread::sleep_for(std::chrono::seconds(1));
 
+    producer.join(); // never reached
     return 0;
 }
