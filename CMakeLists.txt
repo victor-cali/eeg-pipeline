@@ -22,7 +22,24 @@ add_executable(lsl_demo
     thirdparty/fft/fft.cpp 
     src/RingBuffer.cpp
 )
+
+
+add_executable(ringbuffer_test
+    src/ringbuffer_test.cpp    # <--- new test file
+    src/RingBuffer.cpp
+)
+
+target_include_directories(ringbuffer_test PRIVATE include)
+
+
 # Include directory for LSLAdapter.hpp
-target_include_directories(lsl_demo PRIVATE include)
-# Link to liblsl target
-target_link_libraries(lsl_demo PRIVATE LSL::lsl)
+target_include_directories(lsl_demo PRIVATE 
+    include
+    thirdparty/fft
+)
+
+# Link to liblsl and OpenMP
+target_link_libraries(lsl_demo PRIVATE 
+    LSL::lsl
+    OpenMP::OpenMP_CXX 
+)
