@@ -17,7 +17,6 @@ FeatureExtractor::Features FeatureExtractor::compute_features(const std::vector<
     features.variance = calculate_variance(window_data);
     features.entropy = calculate_entropy(window_data);
     
-    // Call the new band power function
     calculate_band_powers(window_data, sampling_rate, features);
 
     return features;
@@ -43,16 +42,15 @@ double FeatureExtractor::calculate_variance(const std::vector<double>& window_da
     return squared_diff_sum / window_data.size();
 }
 
-// v-- ADDED THIS ENTIRE FUNCTION --v
 double FeatureExtractor::calculate_entropy(const std::vector<double>& window_data) {
-    // 1. Create a histogram to count occurrences of each value (discretized).
-    // To keep it simple, we'll round values to 2 decimal places to create bins.
+    //Create a histogram to count occurrences of each value
+    
     std::map<int, int> counts;
     for (double val : window_data) {
         counts[static_cast<int>(val * 100)]++;
     }
 
-    // 2. Calculate probabilities and sum for entropy
+    //Calculate probabilities and sum for entropy
     double entropy = 0.0;
     const double total_samples = window_data.size();
     for (auto const& [value_bin, count] : counts) {
@@ -68,10 +66,8 @@ double FeatureExtractor::calculate_entropy(const std::vector<double>& window_dat
 
 void FeatureExtractor::calculate_band_powers(const std::vector<double>& window_data, double sampling_rate, Features& features) {
     size_t n = window_data.size();
-    // FFT works best with sizes that are powers of 2
+
     if (n == 0 || (n & (n - 1)) != 0) {
-        // This is a simple way to check for power of 2. For now, we just warn.
-        // A more robust solution would pad the data to a power of 2.
         std::cerr << "Warning: Data size (" << n << ") is not a power of 2. FFT results may be inaccurate." << std::endl;
         return;
     }
@@ -86,9 +82,9 @@ void FeatureExtractor::calculate_band_powers(const std::vector<double>& window_d
     Fft::transform(fft_input);
 
     // 3. Calculate Power Spectrum
-    std::vector<double> power_spectrum(n / 2); // We only need the first half
+    std::vector<double> power_spectrum(n / 2);
     for (size_t i = 0; i < n / 2; ++i) {
-        power_spectrum[i] = std::norm(fft_input[i]); // norm = magnitude squared
+        power_spectrum[i] = std::norm(fft_input[i]);
     }
 
     // 4. Define frequency bands

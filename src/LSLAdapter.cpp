@@ -3,13 +3,12 @@
 
 LSLAdapter::LSLAdapter() = default;
 
-// Destructor definition
 LSLAdapter::~LSLAdapter() {
-    // If inlet_ was successfully created (not nullptr), delete it.
+    // If inlet_ was successfully created delete it.
     // The lsl::stream_inlet destructor will automatically handle disconnection.
     if (inlet_ != nullptr) {
         delete inlet_; 
-        inlet_ = nullptr; // Good practice to nullify after deleting
+        inlet_ = nullptr;
     }
 }
 

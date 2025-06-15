@@ -13,7 +13,7 @@ public:
     bool connect(const std::string& stream_name, double timeout = 5.0);
 
     // Pulls a chunk of data into a preallocated float buffer.
-    // Returns number of samples read (each sample has channel_count_ values)
+    // Returns number of samples read
     std::size_t pull_chunk(float* dst, std::size_t max_elements, double timeout = 0.2);
 
     int channel_count() const { return channel_count_; }

@@ -6,7 +6,7 @@
 #include <atomic>
 #include <chrono>
 
-// 🧠 These must be defined BEFORE use
+
 const size_t channels = 16;
 const size_t capacitySamples = 256;
 
@@ -55,7 +55,6 @@ void consumer_thread(RingBuffer& ring) {
 int main() {
     std::cout << "[Test] Initializing ring buffer...\n";
 
-    // ✅ Pass valid values
     RingBuffer ring(capacitySamples, channels);
 
     std::thread prod(producer_thread, std::ref(ring));

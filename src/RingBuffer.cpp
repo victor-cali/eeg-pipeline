@@ -9,7 +9,7 @@ RingBuffer::RingBuffer(std::size_t capacitySamples, std::size_t channels)
       head_(0),
       tail_(0)
 {
-    buffer_.resize(capacityElements_, 0.0f);  // ✅ safe explicit allocation
+    buffer_.resize(capacityElements_, 0.0f);  //safe explicit allocation
     std::cout << "[RingBuffer::ctor] capacitySamples = " << capacitySamples_ << "\n";
     std::cout << "[RingBuffer::ctor] channels = " << channels_ << "\n";
     std::cout << "[RingBuffer::ctor] capacityElements = " << capacityElements_ << "\n";

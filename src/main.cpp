@@ -1,14 +1,14 @@
 #include "LSLAdapter.h"
 #include "FeatureExtractor.h"
-#include "LSLOutput.h" // For sending processed features
+#include "LSLOutput.h"
 #include "RingBuffer.h"
-#include "BandPassFilter.h" // Include the header for CudaBandpassFilter
+#include "BandPassFilter.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include <cmath>
 #include <chrono>
-#include <omp.h> // Required for OpenMP functions
+#include <omp.h>
 
 // Helper function to find the largest power of 2 less than or equal to n
 size_t largest_power_of_2(size_t n) {
@@ -26,7 +26,7 @@ int main() {
     const int C = adapter.channel_count();
 
     const int num_channels = adapter.channel_count();
-    const double sampling_rate =  128.0f;//adapter.sampling_rate();
+    const double sampling_rate =  128.0f;
     const int max_chunk_size = 512;
     std::vector<float> buffer(num_channels * max_chunk_size);
 
@@ -36,7 +36,7 @@ int main() {
         30.0f                    // high cutoff in Hz
     );
 
-    // --- LSL Output Setup ---
+    //  LSL Output Setup
     std::vector<std::string> feature_channel_names;
     const std::vector<std::string> feature_names = {"RMS", "Var", "Ent", "Alpha", "Beta"};
     for (int c = 0; c < num_channels; ++c) {
@@ -63,10 +63,10 @@ int main() {
 
             std::cout << "--- Received Chunk, processing " << window_size << " samples ---\n";
 
-            // ✅ Apply CUDA filter
+            // CUDA filter
             filter.process(buffer.data(), adapter.channel_count(), window_size);
 
-            // Optionally inspect or pass filtered data downstream
+            // Inspect or pass filtered data downstream
             std::cout << "[Filter] Applied bandpass filter on " << adapter.channel_count()
                       << " channels × " << window_size << " samples\n";
 
@@ -82,7 +82,7 @@ int main() {
                 all_features[c] = FeatureExtractor::compute_features(channel_window, sampling_rate);
             }
 
-            // --- Flatten and Send Features via LSL Output ---
+            // Flatten and Send Features via LSL Output 
             std::vector<double> features_flat;
             features_flat.reserve(num_channels * feature_names.size());
             for (int c = 0; c < num_channels; ++c) {
@@ -94,7 +94,7 @@ int main() {
             }
             output_stream.send_features(features_flat);
             
-            // v-- THIS IS THE PART THAT DISPLAYS THE FEATURES --v
+        
             std::cout << "Features computed and sent to LSL. Values:\n";
             for (int c = 0; c < num_channels; ++c) {
                 const auto& features = all_features[c];

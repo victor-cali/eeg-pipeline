@@ -14,7 +14,7 @@
  * @brief Manages a dedicated LSL output stream on a separate thread.
  *
  * This class creates an LSL outlet and runs a background thread to send feature
- * data with low latency, preventing the main processing loop from blocking.
+ * data.
  */
 class LSLOutput {
 public:

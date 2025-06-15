@@ -17,7 +17,7 @@ LSLOutput::LSLOutput(const std::string& name, const std::string& type, const std
     }
 
     // 3. Create the outlet
-    outlet_ = lsl_create_outlet(info_, 0, 360); // Use a chunk size of 0 for variable size, 360s buffer
+    outlet_ = lsl_create_outlet(info_, 0, 360);
     if (!outlet_) {
         std::cerr << "Error: Could not create LSL outlet." << std::endl;
         return;
@@ -34,7 +34,7 @@ LSLOutput::~LSLOutput() {
         std::unique_lock<std::mutex> lock(queue_mutex_);
         stop_thread_ = true;
     }
-    cv_.notify_one(); // Wake up the thread so it can exit
+    cv_.notify_one();
     if (output_thread_.joinable()) {
         output_thread_.join();
     }
@@ -51,7 +51,7 @@ void LSLOutput::send_features(const std::vector<double>& features) {
         std::unique_lock<std::mutex> lock(queue_mutex_);
         data_queue_.push(features);
     }
-    cv_.notify_one(); // Notify the output thread that new data is available
+    cv_.notify_one(); 
 }
 
 void LSLOutput::output_thread_func() {

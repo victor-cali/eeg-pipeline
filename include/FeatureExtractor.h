@@ -23,7 +23,7 @@ public:
      * @param sampling_rate The sampling rate of the signal in Hz.
      * @return A Features struct containing the calculated feature values.
      */
-    static Features compute_features(const std::vector<double>& window_data, double sampling_rate); // <-- MODIFIED
+    static Features compute_features(const std::vector<double>& window_data, double sampling_rate);
 
 private:
     static double calculate_rms(const std::vector<double>& window_data);
@@ -36,7 +36,7 @@ private:
      * @param sampling_rate The sampling rate of the signal in Hz.
      * @param features A reference to the features struct to be filled.
      */
-    static void calculate_band_powers(const std::vector<double>& window_data, double sampling_rate, Features& features); // <-- ADDED
+    static void calculate_band_powers(const std::vector<double>& window_data, double sampling_rate, Features& features);
 };
 
 #endif // FEATURE_EXTRACTOR_H
