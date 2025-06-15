@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(LSLDemo LANGUAGES CXX)
+project(LSLDemo LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -13,6 +13,11 @@ endif()
 add_subdirectory(external/liblsl)
 add_library(LSL::lsl ALIAS lsl)
 
+# Add CUDA source
+set(CUDA_SOURCES
+    src/BandPassFilter.cu
+)
+
 # Add your executable
 add_executable(lsl_demo
     src/main.cpp
@@ -21,15 +26,9 @@ add_executable(lsl_demo
     src/FeatureExtractor.cpp
     thirdparty/fft/fft.cpp 
     src/RingBuffer.cpp
+    src/BandPassFilter.cu
 )
 
-
-add_executable(ringbuffer_test
-    src/ringbuffer_test.cpp    # <--- new test file
-    src/RingBuffer.cpp
-)
-
-target_include_directories(ringbuffer_test PRIVATE include)
 
 
 # Include directory for LSLAdapter.hpp
